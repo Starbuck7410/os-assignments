@@ -6,6 +6,7 @@
 
 typedef struct command_T{
     size_t length;
+    int background;
     char ** args;
 } command_T;
 

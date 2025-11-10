@@ -27,8 +27,8 @@ void line_to_command(command_T * command, line_T line){
     int j = 0;
     // if(line.length < 0 || line.length > MAX_BUFFER) return;
     char buffer[MAX_BUFFER];
-    for(int i = 0; i < line.length + 1; i++){
-        if(line.line[i] != ' ' && line.line[i] != 0){
+    for(size_t i = 0; i < line.length + 1; i++){
+        if(line.line[i] != ' ' && line.line[i] != 0 && line.line[i] != '&'){
             buffer[j] = line.line[i];
             j++;
         }else{
@@ -39,6 +39,10 @@ void line_to_command(command_T * command, line_T line){
                 arg++;
                 j = 0;    
             }
+            if(line.line[i] == '&'){
+                command->background = 1;
+                break;
+            }
         }
     }
     command->length = arg;
@@ -46,19 +50,20 @@ void line_to_command(command_T * command, line_T line){
 }
 
 void dbg_print_command(command_T * command){
-    for(int i = 0; i < command->length; i++){
-        printf("arg[%d]=\'%s\', ", i, command->args[i]);
+    for(size_t i = 0; i < command->length; i++){
+        printf("arg[%d]=\'%s\', ", (int) i, command->args[i]);
     }
-    printf("\n");
+    printf("Background: %d\n", command->background);
 }
 
 
 void free_command(command_T * command){
-    for(int i = 0; i < command->length; i++){
+    for(size_t i = 0; i < command->length; i++){
         free(command->args[i]);
         command->args[i] = NULL;
     }
     free(command->args);
     command->args = NULL;
+    command->background = 0;
     command->length = 0;
 }
