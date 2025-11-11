@@ -1,4 +1,5 @@
 #include "../include/readline.h"
+#include "../include/processes.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -8,8 +9,10 @@ line_T read_line(char * prompt){
     fflush(stdout);
     char * line_buffer = malloc(MAX_BUFFER);
     size_t length = read(STDIN_FILENO, line_buffer, MAX_BUFFER);
+    check_errors("read");
     if(length > MAX_BUFFER){
-        // TODO error handling
+        printf("Warning: line is too long\n");
+        length = 1023;
     }
     length--;
     line_buffer[length] = 0;
@@ -57,7 +60,7 @@ void dbg_print_command(command_T * command){
 }
 
 
-void free_command(command_T * command){
+void initalize_command(command_T * command){
     for(size_t i = 0; i < command->length; i++){
         free(command->args[i]);
         command->args[i] = NULL;

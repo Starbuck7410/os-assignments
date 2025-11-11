@@ -19,4 +19,4 @@ typedef struct line_T{
 line_T read_line(char * prompt);
 void dbg_print_command(command_T * command);
 void line_to_command(command_T * command, line_T line);
-void free_command(command_T * command);
+void initalize_command(command_T * command);

@@ -20,3 +20,10 @@ void print_processes(processes_T * procs){
         printf("%d\t%s\n", procs->pids[i], procs->lines[i].text);
     }
 }
+
+void check_errors(char * syscall){
+    if(errno){
+        printf("hw1shell: %s failed, errno is %d\n", syscall, errno);
+    }
+    errno = 0;
+}
