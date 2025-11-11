@@ -13,7 +13,7 @@ typedef struct command_T{
 
 typedef struct line_T{
     size_t length;
-    char * line;
+    char * text;
 } line_T;
 
 line_T read_line(char * prompt);

@@ -15,7 +15,7 @@ line_T read_line(char * prompt){
     line_buffer[length] = 0;
     line_T final_line = {
         .length = length,
-        .line = line_buffer
+        .text = line_buffer
     };
     return final_line;
 }
@@ -28,8 +28,8 @@ void line_to_command(command_T * command, line_T line){
     // if(line.length < 0 || line.length > MAX_BUFFER) return;
     char buffer[MAX_BUFFER];
     for(size_t i = 0; i < line.length + 1; i++){
-        if(line.line[i] != ' ' && line.line[i] != 0 && line.line[i] != '&'){
-            buffer[j] = line.line[i];
+        if(line.text[i] != ' ' && line.text[i] != 0 && line.text[i] != '&'){
+            buffer[j] = line.text[i];
             j++;
         }else{
             if(j != 0){
@@ -39,7 +39,7 @@ void line_to_command(command_T * command, line_T line){
                 arg++;
                 j = 0;    
             }
-            if(line.line[i] == '&'){
+            if(line.text[i] == '&'){
                 command->background = 1;
                 break;
             }
