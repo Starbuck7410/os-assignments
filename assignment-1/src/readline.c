@@ -5,6 +5,7 @@
 
 
 line_T read_line(char * prompt){
+    int eof = 0;
     printf("%s", prompt);
     fflush(stdout);
     char * line_buffer = malloc(MAX_BUFFER);
@@ -12,26 +13,33 @@ line_T read_line(char * prompt){
     check_errors("read");
     if(length > MAX_BUFFER){
         printf("Warning: line is too long\n");
-        length = 1023;
+        length = 1024;
     }
-    length--;
-    line_buffer[length] = 0;
+    if(length == 0) {
+        eof = 1;
+    }else{
+        if(line_buffer[length - 1] != '\n') eof = 1;
+
+        length--; // Length refers to the length of the line, not the terminated string 
+        line_buffer[length] = 0;
+    }
     line_T final_line = {
         .length = length,
-        .text = line_buffer
+        .text = line_buffer,
+        .eof = eof
     };
     return final_line;
 }
 
 
-void line_to_command(command_T * command, line_T line){
+void line_to_command(command_T * command, line_T line){ // int to signal exit with ctrl + d
     command->args = malloc(MAX_ARGS * sizeof(char *));
     int arg = 0;
     int j = 0;
-    // if(line.length < 0 || line.length > MAX_BUFFER) return;
     char buffer[MAX_BUFFER];
     for(size_t i = 0; i < line.length + 1; i++){
-        if(line.text[i] != ' ' && line.text[i] != 0 && line.text[i] != '&'){
+        char c = line.text[i];
+        if(c != ' ' && c != 0 && c != '&'){
             buffer[j] = line.text[i];
             j++;
         }else{

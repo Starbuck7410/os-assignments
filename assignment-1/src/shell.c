@@ -21,11 +21,24 @@
 // Are the responses exact? Will the assignment be tested using a script or 
 // by a real human being?
 
+processes_T procs = { // This one is only global so the ctrl + c thing will work
+    .queue_idx = 1
+};
+
+void kill_child(int signal_id){
+    if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGINT);
+    printf("\n");
+}
+
+
 int main(){
+    if (signal(SIGINT, kill_child) == SIG_ERR) {
+        printf("Error registering signal handler");
+        return 1;
+    }
+
     char prompt[MAX_PROMPT] = "hw1shell$ ";
-    processes_T procs = {
-        .queue_idx = 1
-    };
+    
     line_T line;
     command_T command = {
         .length = 0,
@@ -37,6 +50,11 @@ int main(){
 
     while(!exit){
         line = read_line(prompt);
+        if(line.eof){
+            printf("\n");
+            exit = 1;
+            goto clear_line;
+        }
         line_to_command(&command, line);
         
         
@@ -78,13 +96,16 @@ int main(){
                 procs.pids[procs.queue_idx] = pid;
                 procs.queue_idx++;
             }else{
-                waitpid(pid, &(procs.status[0]), 0);
+                procs.pids[0] = pid;
+                waitpid(procs.pids[0], &(procs.status[0]), 0);
                 check_errors("wait");
+                procs.pids[0] = 0;
             }
         }else{
             int error = execvp(command.args[0], command.args);
             check_errors("exec");
             if(error) printf("hw1shell: invalid command\n");
+            return 0;
         }
             
 
@@ -108,5 +129,6 @@ int main(){
         if(!command.background) free(line.text);
         initalize_command(&command);
     }
+    printf("Exiting...\n");
     return 0;
 }
