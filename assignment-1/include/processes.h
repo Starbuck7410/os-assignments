@@ -6,3 +6,5 @@ typedef struct processes_T {
     int status[MAX_PROCESSES];
     size_t queue_idx; // 0 is always the foreground process
 } processes_T;
+
+void ripple_processes(processes_T * procs);

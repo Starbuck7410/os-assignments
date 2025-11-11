@@ -46,10 +46,6 @@ int main(){
             exit = 1;
             goto clear_line;
         }
-        if(strcmp(command.args[0], "exit") == 0) {
-            exit = 1;
-            goto clear_line;
-        }
 
         
         // Or an external command
@@ -78,11 +74,15 @@ int main(){
 
         clear_line:
 
-        for(int i = 1; i < MAX_PROCESSES; i++){
+        for(size_t i = 1; i < procs.queue_idx; i++){
             if(procs.pids[i]){
-                if(kill(procs.pids[i], 0)) {
+                // printf("Process %lu - PID: %d. Alive? %d\n", i, procs.pids[i], kill(procs.pids[i], 0));
+                
+                if(waitpid(procs.pids[i], &procs.status[i], WNOHANG)) {
                     printf("hw1shell: pid %d finished.\n", procs.pids[i]);
-                    // TODO Ripple child processes
+                    // waitpid(procs.pids[i], &procs.status[i], WNOHANG);
+                    procs.pids[i] = 0;
+                    ripple_processes(&procs);
                 }
             }
            
