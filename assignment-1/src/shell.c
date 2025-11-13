@@ -11,19 +11,16 @@
 
 // I believe the code is sufficiently readable, with meaningful variable,
 // type and struct names. If there are any issues feel free to deduct from 
-// my score, I will not mind much since I mostly did this assignment for fun. 
-
-// QUESTIONS
-// Should I also check for errors on printf, malloc/calloc and free?
-// Are the responses exact? Will the assignment be tested using a script or 
-// by a real human being?
+// my score, I won't mind much since I mostly did this assignment for fun. 
 
 processes_T procs = { // This one is only global so the ctrl + c thing will work
     .queue_idx = 1
 };
 
 void kill_child(int signal_id){
-    if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGKILL);
+    // I know sending sigkill isnt as nice as sigint but I am making the children
+    // not respond to sigint 😭
+    if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGKILL); 
     write(STDOUT_FILENO, "\n", 1);
 }
 
@@ -55,8 +52,7 @@ int main(){
         line_to_command(&command, line);
         
         
-        // Handle internal commands first
-        if(line.length == 0) goto clear_line;
+        if(line.length == 0 || command.length == 0) goto clear_line;
         if(strcmp(command.args[0], "cd") == 0){
             int error = chdir(command.args[1]);
             check_errors("chdir");
@@ -75,7 +71,7 @@ int main(){
             print_processes(&procs);
             goto clear_line;
         }
-        if(strcmp(command.args[0], "fg") == 0) {
+        if(strcmp(command.args[0], "fg") == 0) {  // Definitely for fun
             int job_id = string_to_pos_int(command.args[1]);
             if(job_id <= 0){
                 printf("Switching to job [%d]\n", job_id);
@@ -93,12 +89,7 @@ int main(){
             goto clear_line;
         }
 
-        // Or an external command
         run_external_command(&command, &procs, line);
-        // printf("%lu\n", procs.queue_idx);
-
-
-            
 
         clear_line:
 
@@ -110,11 +101,8 @@ int main(){
                     printf("hw1shell: pid %d finished.\n", procs.pids[i]);
                     procs.pids[i] = 0;
                     ripple_processes(&procs);
-                }
-                
+                }       
             }
-           
-            
         }
 
         if(!command.background) clear_line(&line);

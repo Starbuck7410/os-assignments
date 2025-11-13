@@ -15,11 +15,10 @@ line_T read_line(char * prompt){
         printf("Warning: line is too long\n");
         length = 1024;
     }
-    if(length == 0) {
+    if(length < 1) {
         eof = 1;
     }else{
         if(line_buffer[length - 1] != '\n') eof = 1;
-
         length--; // Length refers to the length of the line, not the terminated string 
         line_buffer[length] = 0;
     }
@@ -32,7 +31,7 @@ line_T read_line(char * prompt){
 }
 
 
-void line_to_command(command_T * command, line_T line){ // int to signal exit with ctrl + d
+void line_to_command(command_T * command, line_T line){
     command->args = malloc(MAX_ARGS * sizeof(char *));
     int arg = 0;
     int j = 0;
