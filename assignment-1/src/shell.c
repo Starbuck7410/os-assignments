@@ -1,9 +1,6 @@
 #include "../include/readline.h"
 #include "../include/processes.h"
 #include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <string.h>
 #define MAX_PROMPT 64
 
@@ -26,8 +23,8 @@ processes_T procs = { // This one is only global so the ctrl + c thing will work
 };
 
 void kill_child(int signal_id){
-    if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGINT);
-    printf("\n");
+    if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGKILL);
+    write(STDOUT_FILENO, "\n", 1);
 }
 
 
@@ -80,42 +77,27 @@ int main(){
         }
         if(strcmp(command.args[0], "fg") == 0) {
             int job_id = string_to_pos_int(command.args[1]);
-            printf("Switching to job [%d]\n", job_id);
-            process_to_fg(&procs, job_id);
-            waitpid(procs.pids[0], &(procs.status[0]), 0);
-            check_errors("wait");
-            procs.pids[0] = 0;
+            if(job_id <= 0){
+                printf("Switching to job [%d]\n", job_id);
+                process_to_fg(&procs, job_id);
+                waitpid(procs.pids[0], &(procs.status[0]), 0);
+                check_errors("wait");
+                procs.pids[0] = 0;
+            } 
             goto clear_line;
         }
         
 
-
-        // Or an external command
-        if(command.background && procs.queue_idx == MAX_PROCESSES - 1){
+        if(command.background && procs.queue_idx == MAX_PROCESSES){
             printf("hw1shell: too many background commands running\n");
             goto clear_line;
         }
 
-        pid_t pid = fork();
-        check_errors("fork");
-        if(pid > 0){
-            if(command.background){
-                printf("hw1shell: pid %d started\n", pid);
-                procs.lines[procs.queue_idx] = line;
-                procs.pids[procs.queue_idx] = pid;
-                procs.queue_idx++;
-            }else{
-                procs.pids[0] = pid;
-                waitpid(procs.pids[0], &(procs.status[0]), 0);
-                check_errors("wait");
-                procs.pids[0] = 0;
-            }
-        }else{
-            int error = execvp(command.args[0], command.args);
-            check_errors("exec");
-            if(error) printf("hw1shell: invalid command\n");
-            return 0;
-        }
+        // Or an external command
+        run_external_command(&command, &procs, line);
+        // printf("%lu\n", procs.queue_idx);
+
+
             
 
         clear_line:
@@ -137,6 +119,10 @@ int main(){
 
         if(!command.background) clear_line(&line);
         clear_command(&command);
+    }
+    for(int i = procs.queue_idx - 1; i > 0; i++){
+        kill(procs.pids[i], SIGKILL);
+        waitpid(procs.pids[i], &procs.status[i], 0);
     }
     printf("Exiting...\n");
     return 0;

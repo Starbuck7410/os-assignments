@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
 #define MAX_PROCESSES 5
 
 typedef struct processes_T {
@@ -15,3 +18,4 @@ void ripple_processes(processes_T * procs);
 void print_processes(processes_T * procs);
 void check_errors(char * syscall);
 void process_to_fg(processes_T * procs, int job_id);
+void run_external_command(command_T * command, processes_T * procs, line_T line);

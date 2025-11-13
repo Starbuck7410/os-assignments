@@ -1,5 +1,6 @@
 #include "../include/processes.h"
 
+
 void ripple_processes(processes_T * procs){
     size_t ripple_amoount = 0;
     for(size_t i = 1; i < procs->queue_idx; i++){
@@ -12,6 +13,7 @@ void ripple_processes(processes_T * procs){
             procs->status[i] = 0;
         }
     }
+    // printf("Rippled %lu processes\n", ripple_amoount);
     procs->queue_idx -= ripple_amoount;
 }
 
@@ -32,7 +34,31 @@ void process_to_fg(processes_T * procs, int job_id){
     procs->pids[0] = procs->pids[job_id];
     procs->status[0] = procs->status[job_id];
     procs->lines[0] = procs->lines[job_id];
-    procs->queue_idx--;
     procs->pids[job_id] = 0;
     ripple_processes(procs);
+}
+
+void run_external_command(command_T * command, processes_T * procs, line_T line){
+    pid_t pid = fork();
+
+    check_errors("fork");
+    if(pid > 0){
+        if(command->background){
+            printf("hw1shell: pid %d started\n", pid);
+            procs->lines[procs->queue_idx] = line;
+            procs->pids[procs->queue_idx] = pid;
+            procs->queue_idx++;
+        }else{
+            procs->pids[0] = pid;
+            waitpid(procs->pids[0], &(procs->status[0]), 0);
+            check_errors("wait");
+            procs->pids[0] = 0;
+        }
+    }else{
+        signal(SIGINT, SIG_IGN);
+        int error = execvp(command->args[0], command->args);
+        check_errors("exec");
+        if(error) printf("hw1shell: invalid command\n");
+        return;
+    }
 }
