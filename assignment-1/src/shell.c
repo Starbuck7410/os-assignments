@@ -78,6 +78,15 @@ int main(){
             print_processes(&procs);
             goto clear_line;
         }
+        if(strcmp(command.args[0], "fg") == 0) {
+            int job_id = string_to_pos_int(command.args[1]);
+            printf("Switching to job [%d]\n", job_id);
+            process_to_fg(&procs, job_id);
+            waitpid(procs.pids[0], &(procs.status[0]), 0);
+            check_errors("wait");
+            procs.pids[0] = 0;
+            goto clear_line;
+        }
         
 
 
@@ -126,8 +135,8 @@ int main(){
             
         }
 
-        if(!command.background) free(line.text);
-        initalize_command(&command);
+        if(!command.background) clear_line(&line);
+        clear_command(&command);
     }
     printf("Exiting...\n");
     return 0;

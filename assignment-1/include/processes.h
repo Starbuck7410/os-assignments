@@ -1,6 +1,7 @@
 #include "../include/readline.h"
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #define MAX_PROCESSES 5
 
 typedef struct processes_T {
@@ -13,3 +14,4 @@ typedef struct processes_T {
 void ripple_processes(processes_T * procs);
 void print_processes(processes_T * procs);
 void check_errors(char * syscall);
+void process_to_fg(processes_T * procs, int job_id);

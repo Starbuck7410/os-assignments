@@ -68,7 +68,7 @@ void dbg_print_command(command_T * command){
 }
 
 
-void initalize_command(command_T * command){
+void clear_command(command_T * command){
     for(size_t i = 0; i < command->length; i++){
         free(command->args[i]);
         command->args[i] = NULL;
@@ -77,4 +77,25 @@ void initalize_command(command_T * command){
     command->args = NULL;
     command->background = 0;
     command->length = 0;
+}
+
+
+void clear_line(line_T * line){
+    free(line->text);
+    line->length = 0;
+}
+
+
+int string_to_pos_int(char * string){
+    if(string == NULL) return -1;
+    char c = string[0];
+    int value = 0;
+    int i = 0;
+    while(48 <= c && c <= 57){
+        value *= 10;
+        value += c - '0';
+        i++;
+        c = string[i];
+    }
+    return value;
 }

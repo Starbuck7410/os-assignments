@@ -8,7 +8,7 @@ void ripple_processes(processes_T * procs){
         procs->status[i - ripple_amoount] = procs->status[i - ripple_amoount];
         if(procs->pids[i] == 0) {
             ripple_amoount++;
-            free(procs->lines[i].text);
+            clear_line(&(procs->lines[i]));
             procs->status[i] = 0;
         }
     }
@@ -17,7 +17,7 @@ void ripple_processes(processes_T * procs){
 
 void print_processes(processes_T * procs){
     for(size_t i = 1; i < procs->queue_idx; i++){
-        printf("%d\t%s\n", procs->pids[i], procs->lines[i].text);
+        printf("[%lu] %d\t%s\n", i, procs->pids[i], procs->lines[i].text);
     }
 }
 
@@ -26,4 +26,13 @@ void check_errors(char * syscall){
         printf("hw1shell: %s failed, errno is %d\n", syscall, errno);
     }
     errno = 0;
+}
+
+void process_to_fg(processes_T * procs, int job_id){
+    procs->pids[0] = procs->pids[job_id];
+    procs->status[0] = procs->status[job_id];
+    procs->lines[0] = procs->lines[job_id];
+    procs->queue_idx--;
+    procs->pids[job_id] = 0;
+    ripple_processes(procs);
 }
