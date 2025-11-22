@@ -10,7 +10,11 @@ $(TARGET): $(SOURCE) $(INCLUDE)
 	@$(CC) $(FLAGS) -o $(TARGET) $(SOURCE)
 
 
-run: $(TARGET)
+run: clean $(TARGET)
+	@./$(TARGET)
+
+fun: clean
+	@$(CC) $(FLAGS) -DFUNMODE -o $(TARGET) $(SOURCE)
 	@./$(TARGET)
 
 debug:
@@ -19,4 +23,7 @@ debug:
 	@echo "Launching gdb..."
 	@gdb ./$(TARGET)
 
-.PHONY: run debug
+clean:
+	@rm -f $(TARGET)	
+
+.PHONY: run debug fun

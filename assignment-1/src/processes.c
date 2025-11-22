@@ -1,6 +1,7 @@
 #include "../include/processes.h"
 
 
+
 void ripple_processes(processes_T * procs){
     size_t ripple_amoount = 0;
     for(size_t i = 1; i < procs->queue_idx; i++){
@@ -13,14 +14,19 @@ void ripple_processes(processes_T * procs){
             procs->status[i] = 0;
         }
     }
-    // printf("Rippled %lu processes\n", ripple_amoount);
     procs->queue_idx -= ripple_amoount;
 }
 
 void print_processes(processes_T * procs){
+    #ifdef FUNMODE
     for(size_t i = 1; i < procs->queue_idx; i++){
         printf("[%lu] %d\t%s\n", i, procs->pids[i], procs->lines[i].text);
     }
+    #else
+    for(size_t i = 1; i < procs->queue_idx; i++){
+        printf("%d\t%s\n", procs->pids[i], procs->lines[i].text);
+    }
+    #endif
 }
 
 void check_errors(char * syscall){
@@ -55,10 +61,12 @@ void run_external_command(command_T * command, processes_T * procs, line_T line)
             procs->pids[0] = 0;
         }
     }else{
+        #ifdef FUNMODE
         signal(SIGINT, SIG_IGN);
+        #endif
         int error = execvp(command->args[0], command->args);
         check_errors("exec");
         if(error) printf("hw1shell: invalid command\n");
-        return;
+        exit(0);
     }
 }

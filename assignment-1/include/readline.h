@@ -4,6 +4,7 @@
 #include <unistd.h>
 #define MAX_BUFFER 1024
 #define MAX_ARGS 64
+#define MAX_PROMPT 64
 
 typedef struct command_T{
     size_t length;

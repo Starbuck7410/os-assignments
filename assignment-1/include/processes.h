@@ -5,7 +5,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#ifdef FUNMODE
 #include <signal.h>
+#endif
 #define MAX_PROCESSES 5
 
 typedef struct processes_T {

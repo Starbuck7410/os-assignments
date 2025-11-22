@@ -2,7 +2,7 @@
 #include "../include/processes.h"
 #include <stdlib.h>
 #include <string.h>
-#define MAX_PROMPT 64
+
 
 
 // I know the assignment said "Make sure to have comments in your code",
@@ -13,32 +13,31 @@
 // type and struct names. If there are any issues feel free to deduct from 
 // my score, I won't mind much since I mostly did this assignment for fun. 
 
-processes_T procs = { // This one is only global so the ctrl + c thing will work
+processes_T procs = { // This one is only global so the ctrl + c feature will work
     .queue_idx = 1
 };
 
+#ifdef FUNMODE
 void kill_child(int signal_id){
     // I know sending sigkill isnt as nice as sigint but I am making the children
     // not respond to sigint 😭
     if(procs.pids[0] && signal_id == SIGINT) kill(procs.pids[0], SIGKILL); 
     write(STDOUT_FILENO, "\n", 1);
 }
-
+#endif
 
 int main(){
+    #ifdef FUNMODE
     if (signal(SIGINT, kill_child) == SIG_ERR) {
         printf("Error registering signal handler");
         return 1;
     }
+    #endif
 
     char prompt[MAX_PROMPT] = "hw1shell$ ";
     
     line_T line;
-    command_T command = {
-        .length = 0,
-        .args = NULL,
-        .background = 0
-    };
+    command_T command = {0};
     
     int exit = 0;
 
@@ -59,10 +58,12 @@ int main(){
             if(error) printf("hw1shell: invalid command\n");
             goto clear_line;
         }
+        #ifdef FUNMODE
         if(strcmp(command.args[0], "chprompt") == 0){ // For fun
             strcpy(prompt, command.args[1]);
             goto clear_line;
         }
+        #endif
         if(strcmp(command.args[0], "exit") == 0) {
             exit = 1;
             goto clear_line;
@@ -71,6 +72,7 @@ int main(){
             print_processes(&procs);
             goto clear_line;
         }
+        #ifdef FUNMODE
         if(strcmp(command.args[0], "fg") == 0) {  // Definitely for fun
             int job_id = string_to_pos_int(command.args[1]);
             if(job_id <= 0){
@@ -82,6 +84,7 @@ int main(){
             } 
             goto clear_line;
         }
+        #endif
         
 
         if(command.background && procs.queue_idx == MAX_PROCESSES){
@@ -108,10 +111,14 @@ int main(){
         if(!command.background) clear_line(&line);
         clear_command(&command);
     }
-    for(int i = procs.queue_idx - 1; i > 0; i++){
+    for(int i = procs.queue_idx - 1; i > 0; i--){
+        #ifdef FUNMODE
         kill(procs.pids[i], SIGKILL);
-        waitpid(procs.pids[i], &procs.status[i], 0);
+        #endif
+        if(procs.pids[i]) waitpid(procs.pids[i], &procs.status[i], 0);
     }
+    #ifdef FUNMODE 
     printf("Exiting...\n");
+    #endif
     return 0;
 }
