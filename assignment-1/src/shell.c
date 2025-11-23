@@ -33,9 +33,8 @@ int main(){
         return 1;
     }
     #endif
-
-    char prompt[MAX_PROMPT] = "hw1shell$ ";
     
+    char prompt[MAX_PROMPT] = "hw1shell$ ";
     line_T line;
     command_T command = {0};
     
@@ -60,6 +59,7 @@ int main(){
         }
         #ifdef FUNMODE
         if(strcmp(command.args[0], "chprompt") == 0){ // For fun
+            replace_substring(command.args[1], "_", " ");
             strcpy(prompt, command.args[1]);
             goto clear_line;
         }

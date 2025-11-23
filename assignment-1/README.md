@@ -43,6 +43,7 @@ If compiled with `-DFUNMODE`, extra features become available:
 -   A custom SIGINT (Ctrl+C) handler that kills the active foreground
     job
 -   Fancier output for the `jobs` command
+-   Ability to set `$CWD` in `chprompt` to show the current working directory
 
 ## Building
 

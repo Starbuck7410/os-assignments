@@ -6,7 +6,16 @@
 
 line_T read_line(char * prompt){
     int eof = 0;
+    #ifdef FUNMODE
+    char cwd[MAX_PROMPT];
+    char replaced_prompt[MAX_PROMPT];
+    strcpy(replaced_prompt, prompt);
+    getcwd(cwd, MAX_PROMPT);
+    replace_substring(replaced_prompt, "$CWD", cwd);
+    printf("%s", replaced_prompt);
+    #else
     printf("%s", prompt);
+    #endif
     fflush(stdout);
     char * line_buffer = malloc(MAX_BUFFER);
     size_t length = read(STDIN_FILENO, line_buffer, MAX_BUFFER);
@@ -97,4 +106,25 @@ int string_to_pos_int(char * string){
         c = string[i];
     }
     return value;
+}
+
+// There is a bug with this function, 'replacereplace' only replaces one instance
+int replace_substring(char * origin, char * replace, char * target){ // replace 'replace' with 'target'
+    size_t origin_length = strlen(origin);
+    size_t replace_length = strlen(replace);
+    size_t target_length = strlen(target);
+    int count = 0;
+    for(size_t i = 0; i < origin_length - replace_length + 1; i++){
+        if(strncmp(origin + i, replace, replace_length) == 0){
+            size_t delta_length = target_length - replace_length;       
+            for(size_t j = origin_length; j > i; j--){
+                origin[j + delta_length] = origin[j];  
+            }
+            for(size_t j = 0; j < target_length; j++){
+                origin[i + j] = target[j]; 
+            }
+            count++;
+        }
+    }
+    return count;
 }
