@@ -68,13 +68,6 @@ void line_to_command(command_T * command, line_T line){
     return;
 }
 
-void dbg_print_command(command_T * command){
-    for(size_t i = 0; i < command->length; i++){
-        printf("arg[%d]=\'%s\', ", (int) i, command->args[i]);
-    }
-    printf("Background: %d\n", command->background);
-}
-
 
 void clear_command(command_T * command){
     for(size_t i = 0; i < command->length; i++){
