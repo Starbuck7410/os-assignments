@@ -35,7 +35,7 @@ If compiled with `-DFUNMODE`, extra features become available:
 
 ### Extra commands
 
--   `chprompt <new_prompt>`: change the shell prompt
+-   `chprompt <new_prompt>`: change the shell prompt, with the ability to show the current working directory!
 -   `fg <n>`: bring background job *n* to the foreground
 
 ### Extra behavior
