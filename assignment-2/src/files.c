@@ -20,20 +20,13 @@ FILE ** create_counter_files(int count){
 
         fprintf(files[i],"%d", 0);
     }
-    return files;
-}
-
-
-
-void close_counter_files(FILE ** files, int count){
     for(int i = 0; i < count; i++){
        fclose(files[i]);
     }
-    free(files);
+    return files;
 }
 
-job_T * read_commands(FILE * cmd_file){
-    while(1){
-        
-    }
+void strip_newline(char * str) {
+    str[strcspn(str, "\r\n")] = 0;
 }
+

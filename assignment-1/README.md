@@ -69,7 +69,7 @@ make fun
 ```
 To exit:
 ```
-    exit
+exit
 ```
 Or, alternatively you can hit ctrl + D like in bash.
 
@@ -92,10 +92,3 @@ Or, alternatively you can hit ctrl + D like in bash.
 -   No piping or redirection
 -   No aliases
 -   No .hw1shellrc / `source` internal command
-
-## Notes
-
-This shell was developed for an academic assignment and focuses on: -
-Readable, self-documenting C code
-- Understanding job control, processes, and signals
-- Minimal comments where naming and structure suffice

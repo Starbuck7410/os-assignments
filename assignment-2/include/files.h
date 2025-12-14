@@ -5,3 +5,4 @@
 
 FILE ** create_counter_files(int count);
 void close_counter_files(FILE ** files, int count);
+void strip_newline(char * str);
