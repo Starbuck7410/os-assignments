@@ -13,7 +13,7 @@
 // type and struct names. If there are any issues feel free to deduct from 
 // my score, I won't mind much since I mostly did this assignment for fun. 
 
-processes_T procs = { // This one is only global so the ctrl + c feature will work
+processes_T procs = { // This one is global only so the ctrl + c feature will work
     .queue_idx = 1
 };
 
