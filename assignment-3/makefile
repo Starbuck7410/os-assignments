@@ -9,16 +9,16 @@ DEBUG_FLAGS = -Wall -Wextra -g -O0 -DDEBUG -fanalyzer -fsanitize=address
 # Default rule: build the program
 
 server: $(SOURCE_SERVER)
-	@$(CC) $(FLAGS) -o $(TARGET_SERVER) $(SOURCE_SERVER)
+	@$(CC) $(FLAGS) $(SOURCE_SERVER) -o $(TARGET_SERVER)
 
 server-debug: $(SOURCE_SERVER)
-	@$(CC) $(DEBUG_FLAGS) -o $(TARGET_SERVER) $(SOURCE_SERVER)
+	@$(CC) $(DEBUG_FLAGS)  $(SOURCE_SERVER) -o $(TARGET_SERVER)
 
 client: $(SOURCE_CLIENT)
-	@$(CC) $(FLAGS) -o $(TARGET_CLIENT) $(SOURCE_CLIENT)
+	@$(CC) $(FLAGS) $(SOURCE_CLIENT) -o $(TARGET_CLIENT)
 
 client-debug: $(SOURCE_CLIENT)
-	@$(CC) $(DEBUG_FLAGS) -o $(TARGET_CLIENT) $(SOURCE_CLIENT)
+	@$(CC) $(DEBUG_FLAGS) $(SOURCE_CLIENT) -o $(TARGET_CLIENT)
 	
 clean:
 	@rm -f $(TARGET_SERVER) $(TARGET_CLIENT)	
