@@ -1,5 +1,4 @@
 #include "../include/network.h"
-// #include "../include/message.h"
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -19,7 +18,10 @@ int main(int argc, char ** argv){
 
     server_T server = connect_to_socket(atoi(argv[2]), argv[1]);
     connect(server.fd, (sockaddr_T *) &server.sockaddr, server.sockaddr_length);
+    char auth[MAX_USERNAME + 15];
 
+    snprintf(auth, MAX_USERNAME + 15, "@authenticate %s", username);
+    send(server.fd, auth, strlen(auth), 0);
     
     int maxfd = server.fd > STDIN_FILENO ? server.fd : STDIN_FILENO;
     char message[MAX_MESSAGE];
@@ -37,7 +39,7 @@ int main(int argc, char ** argv){
 
 
         if (FD_ISSET(server.fd, &read_fds)) {
-            size_t n = recv(server.fd, message, MAX_MESSAGE - 1, 0);
+            size_t n = recv(server.fd, message, MAX_USERNAME + MAX_MESSAGE + 3, 0);
             if (n <= 0) {
                 printf("Server disconnected\n");
                 break;
