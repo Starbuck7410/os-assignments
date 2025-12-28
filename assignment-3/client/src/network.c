@@ -17,7 +17,7 @@ server_T connect_to_socket(int port, char * address_text){
 
     if(server.fd == -1) {
         printf("Failed to connect to socket.\n");
-        return (server_T) {0};
+        return (server_T) {.fd = -1};
     }
 
     return server;

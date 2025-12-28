@@ -8,7 +8,9 @@ CC = gcc
 FLAGS = -Wall -Wextra
 DEBUG_FLAGS = -Wall -Wextra -g -O0 -DDEBUG -fanalyzer -fsanitize=address
 
-# Default rule: build the program
+all: server client
+
+debug: server-debug client-debug
 
 server: $(SOURCE_SERVER) $(INCLUDE_SERVER)
 	@$(CC) $(FLAGS) $(SOURCE_SERVER) -o $(TARGET_SERVER)

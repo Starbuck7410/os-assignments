@@ -17,7 +17,14 @@ int main(int argc, char ** argv){
     strcpy(username, argv[3]);
 
     server_T server = connect_to_socket(atoi(argv[2]), argv[1]);
-    connect(server.fd, (sockaddr_T *) &server.sockaddr, server.sockaddr_length);
+    if(server.fd == -1) return 1;
+
+    if(connect(server.fd, (sockaddr_T *) &server.sockaddr, server.sockaddr_length) == -1) {
+        printf("Failed to connect to server.\n");
+        close(server.fd);
+        return 1;
+    }
+
     char auth[MAX_USERNAME + 15];
 
     snprintf(auth, MAX_USERNAME + 15, "@authenticate %s", username);
