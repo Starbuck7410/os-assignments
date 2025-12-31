@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <sys/select.h>
 #include "../include/message.h"
-#define MAX_FULL_MESSAGE MAX_USERNAME + MAX_MESSAGE + 3 
+#define MAX_FULL_MESSAGE (MAX_USERNAME + MAX_MESSAGE + 3)
 
 // Since i did not have much time (Thanks to the computer architecture
 // course), this code might be a mess. It's mostly string lengths and lack
@@ -49,7 +49,7 @@ int main(int argc, char ** argv){
             if (FD_ISSET(client[i].fd, &read_fds)) {
                 size_t n = recv(client[i].fd, message, MAX_MESSAGE - 1, 0);
                 if (n <= 0) {
-                    printf("%s disconnected\n", client[i].username);
+                    printf("client %s disconnected\n", client[i].username);
                     close(client[i].fd);
                     client[i].fd = -1;
                     continue;
@@ -76,11 +76,11 @@ int main(int argc, char ** argv){
         }
 
         if (FD_ISSET(listen_fd, &read_fds)) {
-            char auth[MAX_MESSAGE];
+            char auth[MAX_USERNAME + 15];
             char * token;
             temp_client.fd = accept(listen_fd, (sockaddr_T *) &temp_client.sockaddr, &temp_client.sockaddr_length);
             if(temp_client.fd != -1){
-                size_t n = recv(temp_client.fd, auth, MAX_MESSAGE - 1, 0);
+                size_t n = recv(temp_client.fd, auth, MAX_USERNAME + 15, 0);
                 auth[n] = '\0';
                 token = strtok(auth, " ");
                 if(strcmp(token, "@authenticate") != 0){

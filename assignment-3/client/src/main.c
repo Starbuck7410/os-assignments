@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
-#define MAX_MESSAGE 100
-#define MAX_USERNAME 100
+#define MAX_MESSAGE 256
+#define MAX_USERNAME 256
+#define MAX_FULL_MESSAGE (MAX_USERNAME + MAX_MESSAGE + 3)
 
 
 int main(int argc, char ** argv){
@@ -14,7 +15,7 @@ int main(int argc, char ** argv){
     }
 
     char username[MAX_USERNAME];
-    strcpy(username, argv[3]);
+    strncpy(username, argv[3], MAX_USERNAME);
 
     server_T server = connect_to_socket(atoi(argv[2]), argv[1]);
     if(server.fd == -1) return 1;
@@ -31,7 +32,7 @@ int main(int argc, char ** argv){
     send(server.fd, auth, strlen(auth), 0);
     
     int maxfd = server.fd > STDIN_FILENO ? server.fd : STDIN_FILENO;
-    char message[MAX_MESSAGE];
+    char message[MAX_FULL_MESSAGE];
     int exit = 0;
     while(!exit){
 
@@ -46,7 +47,7 @@ int main(int argc, char ** argv){
 
 
         if (FD_ISSET(server.fd, &read_fds)) {
-            size_t n = recv(server.fd, message, MAX_USERNAME + MAX_MESSAGE + 3, 0);
+            size_t n = recv(server.fd, message, MAX_FULL_MESSAGE, 0);
             if (n <= 0) {
                 printf("Server disconnected\n");
                 break;
@@ -67,7 +68,7 @@ int main(int argc, char ** argv){
                 printf("Exiting...\n");
                 break;
             }
-            send(server.fd, message, MAX_MESSAGE - 1, 0);
+            send(server.fd, message, strlen(message), 0);
         }
 
         
