@@ -6,7 +6,7 @@
 // Clever implementation shamelessly stolen from proc.c
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
-static char *states[] = {
+const char * states[] = {
     [UNUSED]    "unused",
     [EMBRYO]    "embryo",
     [SLEEPING]  "sleeping",
