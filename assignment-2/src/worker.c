@@ -19,7 +19,7 @@ long long get_current_time_ms() {
 
 
 void update_counter_file(int counter_id, int value) {
-    if(counter_id < 0 || counter_id >= ctx.num_counters) return;
+    if(counter_id < 0 || counter_id >= ctx.num_counters || counter_id > 99) return;
 
     pthread_mutex_lock(&ctx.counter_mutexes[counter_id]);
 

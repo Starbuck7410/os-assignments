@@ -15,9 +15,6 @@ $(TARGET): $(SOURCE) $(INCLUDE)
 run: clean $(TARGET)
 	@./$(TARGET) $(ARGS)
 
-fun: clean
-	@$(CC) $(FLAGS) -DFUNMODE -o $(TARGET) $(SOURCE)
-	@./$(TARGET) $(ARGS)
 
 debug:
 	@echo "Compiling with debug flags..."
