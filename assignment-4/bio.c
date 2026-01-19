@@ -59,7 +59,7 @@ binit(void)
 // If not found, allocate a buffer.
 // In either case, return locked buffer.
 static struct buf*
-bget(uint dev, uint blockno)
+bget(uint dev, uint blockno) // lol baguette
 {
   struct buf *b;
 
@@ -94,7 +94,7 @@ bget(uint dev, uint blockno)
 
 // Return a locked buf with the contents of the indicated block.
 struct buf*
-bread(uint dev, uint blockno)
+bread(uint dev, uint blockno) // lol bread
 {
   struct buf *b;
 
