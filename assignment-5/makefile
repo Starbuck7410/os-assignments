@@ -4,6 +4,7 @@ INCLUDE = $(wildcard include/*.h)
 CC = gcc
 FLAGS = -Wall -Wextra
 DEBUG_FLAGS = -Wall -Wextra -g -O0 -DDEBUG
+IMAGE_FILE=fs.img
 
 # Default rule: build the program
 $(TARGET): $(SOURCE) $(INCLUDE)
@@ -11,13 +12,14 @@ $(TARGET): $(SOURCE) $(INCLUDE)
 
 
 test: $(TARGET)
-	@./$(TARGET) 
+	@echo "Testing ls..."
+	@./$(TARGET) $(IMAGE_FILE) ls
 
 fun: $(TARGET)
 	@$(CC) $(FLAGS) -DFUNMODE -o $(TARGET) $(SOURCE)
 
 test-fun: fun
-	@./$(TARGET) fs.img ls
+	@./$(TARGET) $(IMAGE_FILE) ls
 
 debug:
 	@echo "Compiling with debug flags..."

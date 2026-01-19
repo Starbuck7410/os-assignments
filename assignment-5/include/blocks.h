@@ -5,12 +5,11 @@
 
 
 typedef struct {
-    struct dirent files[(BSIZE - sizeof(struct dinode))/ FILEITEMSIZE];
+    struct dirent files[BSIZE/FILEITEMSIZE];
 } filelist_T;
 
-typedef union {
-    char raw_bytes[BSIZE];
-    struct superblock super_block;
-    struct dinode di_node[IPB];
-    filelist_T filelist;
-} block_T;
+typedef struct {
+    struct superblock super;
+    struct dinode nodes[IPB];
+    filelist_T file_list;
+} file_blocks_T;
