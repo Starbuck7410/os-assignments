@@ -1,5 +1,6 @@
 #include "../include/fs.h"  // This one is straight from XV6
-#include "../include/blocks.h"  // This one is straight from XV6
+#include "../include/blocks.h"  
+#include "../include/functions.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -9,8 +10,8 @@ typedef enum {
     CMD_CP // Cyberpunk???
 } command_T;
 
-void ls(file_blocks_T * blocks, FILE * fs_file);
-void cp(file_blocks_T * blocks, FILE * fs_file, FILE * dest_file);
+
+int cp(file_blocks_T * blocks, FILE * fs_file, char * dest_name, char * src_name);
 
 int main(int argc, char ** argv){
     command_T command = CMD_ERROR;
@@ -19,7 +20,7 @@ int main(int argc, char ** argv){
             command = CMD_LS;
         }
     }
-    if(argc == 4){
+    if(argc == 5){
         if(strcmp("cp", argv[2]) == 0){
             command = CMD_CP;
         }
@@ -36,55 +37,35 @@ int main(int argc, char ** argv){
     fread(&blocks.super, 1, sizeof(struct superblock), fs_file);
     
     if(command == CMD_LS){
-        ls(&blocks, fs_file);
+        ls(&blocks, fs_file, NULL);
     }
     if(command == CMD_CP){
-        FILE * dest_file = fopen(argv[3], "w");
-        cp(&blocks, fs_file, dest_file);
+        cp(&blocks, fs_file, argv[4], argv[3]);
     }
+
 
     return 0;
     
 }
 
 
-void ls(file_blocks_T * blocks, FILE * fs_file){
 
-    uint inode_block_addr = 0;
-    uint entry_block_addr = 0;
 
-    uint i = 0;
-    char tabs[3] = { '\t', 0, 0 };
-    char name[DIRSIZ + 1];
-    name[DIRSIZ] = 0;
-    uint root_size = BSIZE; // we start with the assumption that the root filelist is contained in one block
-    
-    while(i < root_size / 16){ 
-        if(entry_block_addr != (1 + BBLOCK(i, blocks->super)) * BSIZE) {
-            inode_block_addr = (1 + BBLOCK(i, blocks->super)) * BSIZE;
-            fseek(fs_file, inode_block_addr, SEEK_SET);
-            fread(&blocks->file_list, 1, BSIZE, fs_file);
+
+int cp(file_blocks_T * blocks, FILE * fs_file, char * dest_name, char * src_name){
+    int found_index = ls(blocks, fs_file, src_name);
+    if(found_index >= 0){
+        printf("File found!\n");
+        for(int j = 0; j < NDIRECT + 1; j++){
+            printf("address[%d] = %u\n", j, blocks->nodes[found_index % IPB].addrs[j]);
         }
-        if(blocks->file_list.files[i % FILESINBLOCK].inum == 0) break;
-
-        uint index = blocks->file_list.files[i % FILESINBLOCK].inum;
-        if(inode_block_addr != IBLOCK(index, blocks->super)) {
-            inode_block_addr = (IBLOCK(index, blocks->super)) * BSIZE;
-            fseek(fs_file, inode_block_addr, SEEK_SET);
-            fread(&blocks->nodes, 1, BSIZE, fs_file);
-        }
-        
-        strncpy(name, blocks->file_list.files[i % FILESINBLOCK].name, DIRSIZ);
-        ushort type = blocks->nodes[index % IPB].type;
-        uint size = blocks->nodes[index % IPB].size;
-        if(index == 1) root_size = size; // and then override this assumption if it's false
-        tabs[1] = (strlen(blocks->file_list.files[i % FILESINBLOCK].name) < 8) ? '\t' : 0;
-        printf("%s%s%d %d %d\n", name, tabs, type, index, size);
-        i++;
+        printf("nlink = %u\n", blocks->nodes[found_index % IPB].nlink);
+        int ovf = (blocks->nodes[found_index % IPB].size % BSIZE) ? 1 : 0;
+        int size = (blocks->nodes[found_index % IPB].size / BSIZE) + ovf;
+        printf("blocks = %u\n", size);
+        FILE * dest_file = fopen(dest_name, "w");
+    }else{
+        printf("File %s not found!\n", src_name);
     }
-}
-
-
-void cp(file_blocks_T * blocks, FILE * fs_file, FILE * dest_file){
-
+    return found_index;
 }

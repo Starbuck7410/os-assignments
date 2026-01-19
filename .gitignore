@@ -1,7 +1,7 @@
 id
 .vscode
 assignment-2/*.txt
-
+*.ignore
 
 *.img
 hw*
