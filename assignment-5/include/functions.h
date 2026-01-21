@@ -1,7 +1,8 @@
 #pragma once
-#include "../include/fs.h"
 #include "../include/blocks.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-int ls(file_blocks_T * blocks, FILE * fs_file, char * search_name);
+int cp(file_blocks_T * blocks, FILE * fs_file, char * dest_name, char * src_name);
+int find_files(file_blocks_T * blocks, FILE * fs_file, char * search_name);

@@ -5,7 +5,8 @@ CC = gcc
 FLAGS = -Wall -Wextra
 DEBUG_FLAGS = -Wall -Wextra -g -O0 -DDEBUG
 IMAGE_FILE=fs.img
-CP_TARGET=ls
+TEST_DIR=test
+CP_TARGET=ln
 
 # Default rule: build the program
 $(TARGET): $(SOURCE) $(INCLUDE)
@@ -13,11 +14,11 @@ $(TARGET): $(SOURCE) $(INCLUDE)
 
 
 test: $(TARGET)
+	@mkdir -p $(TEST_DIR)
 	@echo "--- Testing ls ---"
 	@./$(TARGET) $(IMAGE_FILE) ls
 	@echo "--- Testing cp ---"
-	@./$(TARGET) $(IMAGE_FILE) cp $(CP_TARGET) $(CP_TARGET).ignore
-	@rm -f $(CP_TARGET).ignore
+	@./$(TARGET) $(IMAGE_FILE) cp $(CP_TARGET) $(TEST_DIR)/$(CP_TARGET)
 
 fun: $(TARGET)
 	@$(CC) $(FLAGS) -DFUNMODE -o $(TARGET) $(SOURCE)
@@ -32,7 +33,7 @@ debug:
 	@gdb ./$(TARGET) $(ARGS)
 
 clean:
-	@rm -f $(TARGET)
+	@rm -rf $(TARGET) $(TEST_DIR)
 
 
 .PHONY: test debug fun test-fun

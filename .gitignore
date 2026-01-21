@@ -2,6 +2,6 @@ id
 .vscode
 assignment-2/*.txt
 *.ignore
-
+test
 *.img
 hw*

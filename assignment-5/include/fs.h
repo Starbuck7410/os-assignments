@@ -1,7 +1,13 @@
 #pragma once
 
-#define uint unsigned int
-#define ushort unsigned short
+#ifndef uint
+typedef unsigned int uint;
+#endif
+
+
+#ifndef ushort
+typedef unsigned short ushort;
+#endif
 
 // On-disk file system format.
 // Both the kernel and user programs use this header file.
