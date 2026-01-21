@@ -16,7 +16,7 @@ To list files in a filesystem image:
 ./hw5 <image_file> ls
 ```
 
-To copy a file (`readme.txt`) from the image to your local disk (`output.txt`):
+To copy a file from the image to your local disk:
 
 ```
 ./hw5 <image_file> cp <src_in_image> <dest_on_host>
